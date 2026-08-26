@@ -19,6 +19,85 @@
         .mn{font-family:'JetBrains Mono',monospace}
         ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
 
+        /* ==================== PRELOADER ==================== */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: transform 1.2s cubic-bezier(0.76, 0, 0.24, 1);
+            overflow: hidden;
+        }
+        #preloader.lifted {
+            transform: translateY(-100%);
+        }
+        .pre-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .pre-text-wrap {
+            overflow: hidden;
+            padding-bottom: 0.1em;
+        }
+        .pre-text {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(2.5rem, 10vw, 7rem);
+            font-weight: 800;
+            color: transparent;
+            background: linear-gradient(135deg, var(--cy), var(--pu));
+            -webkit-background-clip: text;
+            background-clip: text;
+            display: block;
+            transform: translateY(110%);
+            animation: textReveal 1.2s cubic-bezier(0.7, 0, 0.3, 1) 0.3s forwards;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+        @keyframes textReveal {
+            0% { transform: translateY(110%); }
+            100% { transform: translateY(0); }
+        }
+        .pre-subtext {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+            color: var(--mt);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-top: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 1s ease 1s forwards;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pre-counter {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--mt);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .pre-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 0;
+            background: linear-gradient(90deg, var(--cy), var(--pu));
+            animation: lineGrow 1.8s cubic-bezier(0.7, 0, 0.3, 1) 0.3s forwards;
+        }
+        @keyframes lineGrow {
+            to { width: 100%; }
+        }
+
         .nglass{background:rgba(5,5,8,.88);backdrop-filter:blur(22px);border-bottom:1px solid var(--bdr)}
         .nl{color:var(--mt);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;transition:color .3s;text-decoration:none;position:relative}
         .nl:hover{color:var(--cy)}
@@ -178,9 +257,20 @@
         @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
         @media(max-width:768px){.ht{font-size:2.2rem!important}.hs{font-size:.9rem!important}.portrait-wrap{max-width:260px}.about-pw{max-width:320px}.hero-stat{display:none}.mini-dash{display:none}}
     </style>
-<base target="_blank">
 </head>
 <body>
+
+<!-- PRELOADER -->
+<div id="preloader">
+    <div class="pre-center">
+        <div class="pre-text-wrap">
+            <h1 class="pre-text">Nathenael</h1>
+        </div>
+        <div class="pre-subtext">Data Analyst</div>
+    </div>
+    <div class="pre-counter">0%</div>
+    <div class="pre-line"></div>
+</div>
 
 <!-- NAV -->
 <nav class="nglass fixed top-0 w-full z-50 px-5 md:px-10 py-3 flex justify-between items-center">
@@ -195,7 +285,7 @@
         <a href="#code" class="nl">DAX / Python</a>
         <a href="#contact" class="nl">Contact</a>
     </div>
-    <a href="resume.pdf" download="Nathenael_Jarso_Resume.pdf" class="bm text-xs py-2 px-4 hidden md:inline-flex">
+    <a href="PDF/resume.pdf" download="Nathenael_Jarso_Resume.pdf" class="bm text-xs py-2 px-4 hidden md:inline-flex">
         <i class="fas fa-download"></i> Download Resume
     </a>
     <button class="md:hidden text-lg" style="color:var(--fg);background:none;border:none;cursor:pointer" onclick="document.getElementById('mob').classList.toggle('hidden')"><i class="fas fa-bars"></i></button>
@@ -625,6 +715,27 @@ model.fit(X_train, y_train)
 <footer class="py-6 px-5 text-center" style="background:var(--bg);border-top:1px solid var(--bdr)"><p class="text-xs" style="color:var(--mt)">2023 Nathenael J. Built with data &amp; caffeine.</p></footer>
 
 <script>
+/* ---- PRELOADER LOGIC ---- */
+document.body.style.overflow = 'hidden';
+const preloader = document.getElementById('preloader');
+const counterEl = document.querySelector('.pre-counter');
+let counter = 0;
+const interval = setInterval(() => {
+    counter += Math.floor(Math.random() * 10) + 2;
+    if (counter >= 100) {
+        counter = 100;
+        clearInterval(interval);
+        setTimeout(() => {
+            preloader.classList.add('lifted');
+            document.body.style.overflow = '';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 1200);
+        }, 400);
+    }
+    counterEl.textContent = counter + '%';
+}, 100);
+
 const Q=s=>document.querySelector(s),QA=s=>document.querySelectorAll(s);
 const CY='#00d4ff',PU='#7c3aed',GN='#10b981',AM='#f59e0b',RD='#ef4444';
 const CL=[CY,PU,GN,AM,RD,'#06b6d4','#a855f7','#34d399'];
@@ -639,7 +750,6 @@ const H={
     donut:{p:.6,t:.6,d:[32,24,18,14,12],lb:['Power BI','Python','SQL','DAX','ML'],dr:true},
     bar:{p:.6,t:.6,d:[92,88,85,80,72,68],lb:['PBI','DAX','Python','SQL','ML','Excel'],dr:true},
     line:{p:.6,t:.6,d:[22,35,28,42,38,55,48,62,58,72,68,85],m:['J','F','M','A','M','J','J','A','S','O','N','D'],dr:true},
-    /* p1, p2 & p3 removed as they are replaced by images */
     p4:{p:0,t:0,d:[.72,.88,.6,.45,.92],c:[AM,CY,GN,PU,'#34d399'],hz:true,dr:true},
 };
 
@@ -681,11 +791,9 @@ QA('.ctr').forEach(el=>new IntersectionObserver(es=>{es.forEach(e=>{if(e.isInter
 /* ---- WHITE DASHBOARD ANIMATION TRIGGER ---- */
 const whiteDash = Q('#whiteDash');
 if (whiteDash) {
-    // Set CSS variables for bar heights
     whiteDash.querySelectorAll('.wd-bar').forEach(bar => {
         bar.style.setProperty('--h', bar.getAttribute('data-h'));
     });
-    // Trigger active class when in view
     new IntersectionObserver(es => {
         es.forEach(e => {
             if (e.isIntersecting) e.target.classList.add('active');
@@ -705,7 +813,6 @@ async function hF(e) {
     const fM = document.getElementById('fM');
     const fE = document.getElementById('fE');
     
-    // Loading state
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
     fM.classList.add('hidden');
